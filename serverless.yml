@@ -22,6 +22,9 @@ custom:
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: truee
+    # Load our secret environment variables based on the current stage.
+  # Fallback to default if it is not in prod.
+  environment: ${file(env.yml):${self:custom.stage}, file(env.yml):default}
 
 provider:
   name: aws
@@ -32,6 +35,7 @@ provider:
   # In this case Lambda functions are granted with permissions to access DynamoDB.
   environment:
     tableName: ${self:custom.tableName}
+    stripeSecretKey: ${self:custom.environment.stripeSecretKey}
 
   iamRoleStatements:
     - Effect: Allow
@@ -112,6 +116,14 @@ functions:
 
 # Create our resources with separate CloudFormation templates
 # Create our resources with separate CloudFormation templates
+  billing:
+    handler: billing.main
+    events:
+      - http:
+          path: billing
+          method: post
+          cors: true
+          authorizer: aws_iam
 resources:
   # DynamoDB
   - ${file(resources/dynamodb-table.yml)}
