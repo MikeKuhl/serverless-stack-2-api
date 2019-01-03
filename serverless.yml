@@ -21,11 +21,10 @@ custom:
   # Load our webpack config
   webpack:
     webpackConfig: ./webpack.config.js
-    includeModules: truee
-    # Load our secret environment variables based on the current stage.
+    includeModules: true
+  # Load our secret environment variables based on the current stage.
   # Fallback to default if it is not in prod.
   environment: ${file(env.yml):${self:custom.stage}, file(env.yml):default}
-
 provider:
   name: aws
   runtime: nodejs8.10
